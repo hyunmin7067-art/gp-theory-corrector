@@ -15,11 +15,21 @@ from formula_utils import FormulaError, discover_parameter_names, parse_formula
 from gp_core import KERNEL_DESCRIPTIONS, AnalysisResult, analyze_kernels
 from sample_data import make_rotation_sample
 
-# Windows 한글 그래프 글꼴 설정
-font_path = r"C:\Windows\Fonts\malgun.ttf"
-if Path(font_path).exists():
-    font_name = font_manager.FontProperties(fname=font_path).get_name()
-    rcParams["font.family"] = font_name
+# Windows와 Streamlit Cloud에서 한글 글꼴 설정
+font_candidates = [
+    Path("/usr/share/fonts/truetype/nanum/NanumGothic.ttf"),  # Streamlit Cloud
+    Path(r"C:\Windows\Fonts\malgun.ttf"),                     # Windows
+]
+
+for font_path in font_candidates:
+    if font_path.exists():
+        font_manager.fontManager.addfont(str(font_path))
+        font_name = font_manager.FontProperties(
+            fname=str(font_path)
+        ).get_name()
+        rcParams["font.family"] = font_name
+        break
+
 rcParams["axes.unicode_minus"] = False
 
 st.set_page_config(page_title="GPR 이론식 보정기", page_icon="📈", layout="wide")
